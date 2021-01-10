@@ -1,8 +1,11 @@
 //* importing
 const express=require('express');
 const mongoose=require('mongoose');
-const connection='mongodb://tanay:Ceww3aFqYEcSmhM@cluster0-shard-00-00.peysn.mongodb.net:27017,cluster0-shard-00-01.peysn.mongodb.net:27017,cluster0-shard-00-02.peysn.mongodb.net:27017/learndb?ssl=true&replicaSet=atlas-vdbv79-shard-0&authSource=admin&retryWrites=true&w=majority';
+const { aggregate } = require('./post.js');
+const connection=`mongodb://tanay:${process.env.PASSWORD}@cluster0-shard-00-00.peysn.mongodb.net:27017,cluster0-shard-00-01.peysn.mongodb.net:27017,cluster0-shard-00-02.peysn.mongodb.net:27017/learndb?ssl=true&replicaSet=atlas-vdbv79-shard-0&authSource=admin&retryWrites=true&w=majority`;
 const Posts =require('./post.js');
+require('dotenv').config()
+
 
 //* app config
 const app=express();
@@ -173,11 +176,17 @@ app.post('/rename',(req,res)=>{
     })
 });
 
+
+/**
+ * *to search you need to create an index. I have made it using mongodb gui.
+ * *You have to go to collection then index then add index and in it 
+ * *type {title:"text",name:"text",content:"text"}thats it
+ */
 //*search
 app.post('/search',(req,res)=>{
     Posts.find({
         $text:{
-            $search:"\"this is wow\"",
+            $search:req.body.search,
         }
     },(err,data)=>{
         res.send(data);
